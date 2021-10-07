@@ -11,13 +11,15 @@ import gpxpy
 import reverse_geocode
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='File renamer for GPX traces.')
+    parser = argparse.ArgumentParser(
+        description='File renamer for GPX traces.',
+        epilog='Helper proxies: %(prog)s-min same as using -r, %(prog)s-short same as using -r -t, %(prog)s-long same as using -r -l')
     parser.add_argument('-c', '--copy', action='store_true', help='copy instead of rename/move')
-    parser.add_argument('-d', '--debug', action='store_true', help='activate debug output')
-    parser.add_argument('-f', '--format', nargs=1, help='new format')
-    parser.add_argument('-l', '--long', action='store_true', help='use format for long name')
-    parser.add_argument('-t', '--short', action='store_true', help='use format for short name')
-    parser.add_argument('-r', '--rename', action='store_true', help='rename')
+    parser.add_argument('-d', '--debug', action='store_true', help='activate debug output, can be used to see all Format keywords')
+    parser.add_argument('-f', '--format', nargs=1, help='use custom  format')
+    parser.add_argument('-l', '--long', action='store_true', help='use long format for name: {startdate}-{starttime}_{minlat},{minlon}-{maxlat},{maxlon}_{cities}_{length}_{points}')
+    parser.add_argument('-t', '--short', action='store_true', help='use short format for name: {startdate}-{starttime}_{minlat},{minlon}-{maxlat},{maxlon}_{edges}_{length}')
+    parser.add_argument('-r', '--rename', action='store_true', help='rename, defaut is using minimum format: {startdate}-{starttime}_{edges}')
     parser.add_argument('-s', '--simulate', action='store_true', help='dry run')
     parser.add_argument('files', nargs='+', help='files to be processed')
     args = parser.parse_args()
@@ -103,7 +105,7 @@ if __name__ == '__main__':
         meta['newfilepath'] = os.path.join(meta['dirname'], meta['newfilename'])
 
         logging.debug('Long name: {:}'.format(meta['newfilepath']))
-        logging.debug('Meta :', meta)
+        logging.debug('Meta:...\n{:}'.format('\n'.join(['{:}: {:}'.format(k,v) for k,v in meta.items()])))
 
         if args.simulate:
             print('{filepath} -> {newfilepath}'.format(**meta))
